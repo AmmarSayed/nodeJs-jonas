@@ -4,6 +4,9 @@ const { dirname } = require("path");
 const url = require("url");
 const replaceTemplate = require("./modules/replaceTemplate");
 
+// this liberary replaces the id in the URL into a unique name
+const slugify = require("slugify");
+
 ////////////////////////////////////
 // FILES
 
@@ -41,6 +44,8 @@ const dataObject = JSON.parse(data);
 const tempOverview = fs.readFileSync(`${__dirname}/templates/template-overview.html`, "utf-8");
 const tempCard = fs.readFileSync(`${__dirname}/templates/template-card.html`, "utf-8");
 const tempProduct = fs.readFileSync(`${__dirname}/templates/template-product.html`, "utf-8");
+
+const slugs = dataObject.map((el) => slugify(el.productName, { lower: true }));
 
 const server = http.createServer((req, res) => {
   const myURL = url.parse(req.url, true);

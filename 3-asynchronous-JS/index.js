@@ -37,6 +37,7 @@ const writeFilePro = (file, data) => {
 //     });
 // });
 
+// SOLUTION using promises
 // Will return a promise
 readFilePro(`${__dirname}/dog.txt`)
   .then((data) => {

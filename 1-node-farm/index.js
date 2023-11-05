@@ -1,5 +1,6 @@
 const fs = require("fs");
 const http = require("http");
+const { dirname } = require("path");
 const url = require("url");
 ////////////////////////////////////
 // FILES
@@ -29,13 +30,23 @@ const url = require("url");
 
 ////////////////////////////////////
 // SERVER
+// although that readFileSync is a blocking function, it's okay to put it in the global code top level
+// this is because it will be read once in the begninning
+// also to avoid reading the entire file each time somebody visits the API route
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+const dataObject = JSON.parse(data);
+
 const server = http.createServer((req, res) => {
-  console.log(req.url);
   const pathname = req.url;
   if (pathname === "/" || pathname === "/overview") {
     res.end("This is the OVERVIEW");
   } else if (pathname === "/product") {
     res.end("this is the PRODUCT");
+  } else if (pathname === "/api") {
+    res.writeHead(200, {
+      "Content-type": "application/json",
+    });
+    res.end(data);
   } else {
     res.writeHead(404, {
       "Content-Type": "text/html",

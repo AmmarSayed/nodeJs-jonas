@@ -57,7 +57,8 @@ const tempCard = fs.readFileSync(`${__dirname}/templates/template-card.html`, "u
 const tempProduct = fs.readFileSync(`${__dirname}/templates/template-product.html`, "utf-8");
 
 const server = http.createServer((req, res) => {
-  const pathname = req.url;
+  const myURL = url.parse(req.url, true);
+  const { query, pathname } = url.parse(req.url, true);
 
   // overview page
   if (pathname === "/" || pathname === "/overview") {
@@ -71,7 +72,14 @@ const server = http.createServer((req, res) => {
 
     // product page
   } else if (pathname === "/product") {
-    res.end("this is the PRODUCT");
+    res.writeHead(200, {
+      "Content-type": "text/html",
+    });
+
+    const proudct = dataObject[query.id];
+    const output = replaceTemplate(tempProduct, proudct);
+
+    res.end(output);
 
     // API
   } else if (pathname === "/api") {

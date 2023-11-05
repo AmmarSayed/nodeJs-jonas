@@ -96,3 +96,51 @@ const getDogPic = async () => {
     console.log(`ERROR ${err} 💥`);
   }
 })();
+
+/////////////////////
+// Getting multiple dog pictures
+const getMultiDogPic = async () => {
+  try {
+    const data = await readFilePro(`${__dirname}/dog.txt`);
+    console.log(`Breed: ${data}`);
+
+    //superagent will return a promise
+    const dogData1 = await superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    const dogData2 = await superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    const dogData3 = await superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    const dogData4 = await superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+
+    const all = await Promise.all([dogData1, dogData2, dogData3, dogData4]);
+    const urls = all.map((re) => re.body.message);
+    console.log(urls);
+
+    await writeFilePro('dog-img.txt', urls.join('\n'));
+    console.log('Randome dog image saved to file!');
+  } catch (error) {
+    // thorw an error
+    throw error.message;
+  }
+  return `2: Ready 🐶`;
+};
+
+// IIFE
+(async () => {
+  try {
+    console.log('1: will get dog pics!');
+
+    const x = await getMultiDogPic();
+    console.log(x);
+
+    console.log('3: Done getting dog pics!');
+  } catch (err) {
+    console.log(`ERROR ${err} 💥`);
+  }
+})();

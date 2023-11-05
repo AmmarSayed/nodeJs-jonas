@@ -83,6 +83,7 @@ const getDogPic = async () => {
 //   .then((x) => console.log(x))
 //   .catch((err) => console.log(`ERROR ${err} 💥`));
 
+// IIFE
 (async () => {
   try {
     console.log('1: will get dog pics!');

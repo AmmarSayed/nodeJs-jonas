@@ -1,93 +1,31 @@
 const express = require('express');
-const fs = require('fs');
-const PORT = 8000;
 const app = express();
+const morgan = require('morgan');
+const toursRouter = require('./routes/toursRouter');
+const usersRouter = require('./routes/usersRouter');
 
-// allows express to deal with data comming from the http request body
+////////////////
+// 1) MIDDLEWARES
+// a middleware, allows express to deal with data comming from the http request body
 //
 app.use(express.json());
 
-//
-//
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
-);
-// app.get('/', (req, res) => {
-//   //   res.status(200).send('Hello from Server!');
-//   res.status(200).json({ message: 'Hello from Server!', app: 'natours' });
-// });
-
-// app.post('/', (req, res) => {
-//   res.send('You can post to this endpoint...');
-// });
-
-app.get('/api/v1/tours', (req, res) => {
-  res.status(200).json({
-    status: 'Success',
-    results: tours.length,
-    data: { tours },
-  });
+// The order of the middleware matters, it should come before the concerned route
+app.use((req, res, next) => {
+  console.log('Welcome from middleware ... 🤓');
+  // attach a time to the coming request
+  req.requestTime = new Date().toISOString();
+  next();
 });
 
-app.get('/api/v1/tours/:id', (req, res) => {
-  const id = req.params.id * 1;
-  const tour = tours.find((el) => el.id === id);
+//morgan gives nice console logs
+app.use(morgan('dev'));
 
-  //   if (id > tours.length)
+///////////////////////
+// 3) ROUTES
+app.use('/api/v1/tours', toursRouter);
+app.use('/api/v1/users', usersRouter);
 
-  if (!tour) {
-    return res.status(404).json({
-      status: 'Fail',
-      mesasge: 'Invalid Id',
-    });
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: tour,
-  });
-});
-
-app.post('/api/v1/tours', (req, res) => {
-  //   console.log(req.body);
-
-  const newId = tours.length;
-  const newTour = Object.assign({ id: newId }, req.body);
-
-  tours.push(newTour);
-
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      if (err) console.log(err);
-      res.status(201).json({
-        status: 'success',
-        data: {
-          tour: newTour,
-        },
-      });
-    }
-  );
-});
-
-app.patch('/api/v1/tours/:id', (req, res) => {
-  const id = req.params.id * 1;
-  const tour = tours.find((el) => el.id === id);
-
-  if (!tour) {
-    return res.status(404).json({
-      status: 'Fail',
-      mesasge: 'Invalid Id',
-    });
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: '<Updated Tour here...>',
-  });
-});
-
-app.listen(PORT, () => {
-  console.log(`App running on port ${PORT}...🏃‍♂️...`);
-});
+///////////////////////
+// exporting server app
+module.exports = app;

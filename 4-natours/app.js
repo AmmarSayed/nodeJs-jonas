@@ -6,8 +6,11 @@ const usersRouter = require('./routes/usersRouter');
 
 ////////////////
 // 1) MIDDLEWARES
+if (process.env.NODE_ENV === 'development') {
+  //morgan gives nice console logs
+  app.use(morgan('dev'));
+}
 // a middleware, allows express to deal with data comming from the http request body
-//
 app.use(express.json());
 
 // The order of the middleware matters, it should come before the concerned route
@@ -17,9 +20,6 @@ app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
-
-//morgan gives nice console logs
-app.use(morgan('dev'));
 
 ///////////////////////
 // 3) ROUTES

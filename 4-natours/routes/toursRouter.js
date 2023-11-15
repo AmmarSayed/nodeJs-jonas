@@ -13,7 +13,10 @@ router.param('id', tourController.checkId);
 router
   .route('/')
   .get(tourController.getAllTours)
-  .post(tourController.createTour);
+  .post(
+    tourController.checkBodyData,
+    tourController.createTour
+  );
 
 router
   .route('/:id') // parameter with name "id" - it can be anything I want

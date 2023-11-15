@@ -1,5 +1,7 @@
 const fs = require('fs');
 
+// we can use param middleware to validate if an id exists
+
 const tours = JSON.parse(
   fs.readFileSync(
     `${__dirname}/../dev-data/data/tours.json`
@@ -8,9 +10,21 @@ const tours = JSON.parse(
 
 ////////////////
 // 2) ROUTE HANDLERS
-exports.getAllTours = (req, res) => {
-  console.log(req.requestTime);
+// param middleware
+exports.checkId = (req, res, next, val) => {
+  console.log(val);
+  const id = req.params.id * 1;
 
+  if (id > tours.length) {
+    return res.status(404).json({
+      status: 'Fail',
+      mesasge: 'Invalid Id',
+    });
+  }
+  next();
+};
+
+exports.getAllTours = (req, res) => {
   res.status(200).json({
     status: 'Success',
     results: tours.length,
@@ -22,16 +36,6 @@ exports.getAllTours = (req, res) => {
 exports.getTour = (req, res) => {
   const id = req.params.id * 1;
   const tour = tours.find((el) => el.id === id);
-
-  //   if (id > tours.length)
-
-  if (!tour) {
-    return res.status(404).json({
-      status: 'Fail',
-      mesasge: 'Invalid Id',
-    });
-  }
-
   res.status(200).json({
     status: 'success',
     data: tour,
@@ -40,7 +44,6 @@ exports.getTour = (req, res) => {
 
 exports.createTour = (req, res) => {
   //   console.log(req.body);
-
   const newId = tours.length;
   const newTour = Object.assign({ id: newId }, req.body);
 
@@ -62,16 +65,6 @@ exports.createTour = (req, res) => {
 };
 
 exports.updateTour = (req, res) => {
-  const id = req.params.id * 1; //to convert incomming text to a number - just multiply * 1
-  const tour = tours.find((el) => el.id === id);
-
-  if (!tour) {
-    return res.status(404).json({
-      status: 'Fail',
-      mesasge: 'Invalid Id',
-    });
-  }
-
   res.status(200).json({
     status: 'success',
     data: '<Updated Tour here...>',
@@ -79,16 +72,6 @@ exports.updateTour = (req, res) => {
 };
 
 exports.deleteTour = (req, res) => {
-  const id = req.params.id * 1; //to convert incomming text to a number - just multiply * 1
-  const tour = tours.find((el) => el.id === id);
-
-  if (!tour) {
-    return res.status(404).json({
-      status: 'Fail',
-      mesasge: 'No Content',
-    });
-  }
-
   res.status(204).json({
     status: 'success',
     data: null,

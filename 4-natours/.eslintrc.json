@@ -28,6 +28,9 @@
   },
   "parserOptions": {
     "sourceType": "module"
-  }
+  },
+  "engines": {
+    "node": ">=8.0.0"
+}
 
 }
